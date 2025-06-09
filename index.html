@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Infographic Plan: 
+        1. Header: Iván Pinar's name and title.
+        2. About Section: Brief description of expertise.
+        3. Detailed Competencies: Interactive accordion list for specific skills under each category. With an introductory text.
+        4. Services Offered: Styled cards for each service. With an introductory text.
+        5. Contact Section: Call to action and contact details.
+        All content is derived from "Competencias instructor Iván Pinar.docx".
+    -->
+    <!-- Visualization Choices:
+        - Detailed Competencies: Structured HTML/CSS Accordion (Tailwind). Goal: Organize/Inform. Justification: Clear, interactive list without SVG/Mermaid.
+        - Services: Styled HTML/CSS Cards (Tailwind). Goal: Inform. Justification: Clear visual separation for services without SVG/Mermaid.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competencias y Servicios - Iván Pinar Domínguez</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F9FA; /* Light Gray */
+            color: #212529; /* Dark Gray */
+            scroll-behavior: smooth;
+        }
+        .card {
+            background-color: #FFFFFF; /* White */
+            border-radius: 1rem; /* 16px */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            padding: 2rem; /* 32px */
+            margin-bottom: 2rem; /* 32px */
+        }
+        .section-title {
+            font-size: 2.25rem; /* 36px */
+            line-height: 2.5rem; /* 40px */
+            font-weight: 700;
+            color: #0052CC; /* Primary Blue */
+            text-align: center;
+            margin-bottom: 1.5rem; /* 24px */
+        }
+         .section-intro-text {
+            font-size: 1.125rem; /* 18px */
+            line-height: 1.75rem; /* 28px */
+            color: #495057; /* Medium Gray */
+            text-align: center;
+            max-width: 48rem; /* 768px */
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2.5rem; /* 40px */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px; /* Adjusted for Donut chart visibility */
+            margin-left: auto;
+            margin-right: auto;
+            height: auto; /* Auto height based on aspect ratio */
+            max-height: 450px;
+            padding-bottom: 1rem; /* Space for legend if it's below */
+        }
+        .accordion-header {
+            background-color: #007BFF; /* A more vibrant blue */
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem; /* 12px */
+            font-weight: 600;
+            color: #FFFFFF; /* White text for contrast */
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease; /* Smooth transition for all properties */
+            margin-bottom: 0.5rem; /* 8px */
+            border: 1px solid #0052CC; /* Slightly darker blue border */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+        }
+        .accordion-header:hover {
+            background-color: #0052CC; /* Darker blue on hover */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1); /* More pronounced shadow on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+        .accordion-content {
+            padding: 1.5rem;
+            background-color: #FFFFFF; /* White */
+            border-radius: 0 0 0.75rem 0.75rem;
+            margin-top: -0.5rem; /* Overlap with header bottom margin */
+            margin-bottom: 1rem; /* 16px */
+            border: 1px solid #DEE2E6;
+            border-top: none;
+        }
+        .accordion-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .accordion-content li {
+            margin-bottom: 0.75rem; /* 12px */
+            color: #343A40; /* Darker content text */
+            padding-left: 1.5rem; /* 24px */
+            position: relative;
+        }
+        .accordion-content li::before {
+            content: '✓'; /* Checkmark icon */
+            color: #28A745; /* Accent Green */
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .icon-indicator {
+            transition: transform 0.3s ease;
+            font-weight: bold;
+            font-size: 1.25rem;
+            width: 1.5rem; /* Ensure enough space for + / - */
+            text-align: center;
+        }
+        .icon-indicator.rotated {
+            transform: rotate(45deg); /* Rotate for 'x' effect from '+' */
+        }
+        .service-card {
+            background-color: #007BFF1A; /* Light Primary Blue transparent */
+            border-left: 5px solid #007BFF; /* Primary Blue accent */
+        }
+        .service-card h3 {
+            color: #0052CC; /* Primary Blue */
+        }
+        .nav-link {
+			padding: 0.5rem 1rem; /* px-4 py-2 */
+			font-size: 1.125rem;  /* text-lg */
+			font-weight: 600;     /* font-semibold */
+			background-color: transparent;
+			color: white;         /* <-- Aquí el cambio */
+			border-radius: 0.375rem; /* rounded-md */
+			transition: background-color 0.3s ease;
+		}
+		.nav-link:hover {
+			background-color: rgba(255, 255, 255, 0.2); /* hover:bg-blue-100 adaptado para fondo oscuro */
+		}
+
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <nav class="bg-blue-600 p-4 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto flex flex-wrap justify-center items-center space-x-4">
+            <a href="#header" class="nav-link">Inicio</a>
+            <a href="#about" class="nav-link">Sobre Mí</a>
+            <a href="#detailed-competencies" class="nav-link">Competencias</a>
+            <a href="#services" class="nav-link">Servicios</a>
+            <a href="#contact" class="nav-link">Contacto</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+
+        <header id="header" class="text-center py-16 card bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-4">Iván Pinar Domínguez</h1>
+            <p class="text-xl md:text-2xl font-light">Instructor en Nuevas Tecnologías, Análisis de Datos, IA, Automatización de Procesos y Habilidades de Gestión</p>
+            <div class="mt-8">
+                <img src="https://librefinanciero.com/wp-content/uploads/2025/05/Foto-perfil-profesional-2025.png" alt="Foto de perfil profesional de Iván Pinar Domínguez" class="mx-auto rounded-full w-48 h-48 object-cover border-4 border-white shadow-lg">
+            </div>
+        </header>
+
+        <section id="about" class="card">
+            <h2 class="section-title">Sobre Mí</h2>
+            <p class="section-intro-text">
+                Como instructor y consultor, me dedico a capacitar a profesionales y empresas en las áreas tecnológicas y de gestión más demandadas. Mi misión se centra en ayudar a los demás con un enfoque que se centra en la aplicación práctica de la Inteligencia Artificial, el Análisis de Datos, la Automatización de Procesos y las Habilidades de Gestión, transformando conocimientos en resultados tangibles para impulsar la innovación y la eficiencia en la era digital.
+            </p>
+        </section>
+
+        <section id="detailed-competencies" class="card">
+            <h2 class="section-title">Mis Competencias en Detalle</h2>
+            <p class="section-intro-text">
+                Aquí tienes un desglose detallado de mis competencias específicas dentro de cada área de expertise. Puedes hacer clic en cada categoría para expandir y ver las habilidades y tecnologías concretas que manejo. Esta sección te permitirá conocer a fondo el alcance de mi conocimiento técnico y práctico para poder ayudarte.
+            </p>
+            <div id="competencies-accordion">
+            </div>
+        </section>
+
+        <section id="services" class="card">
+            <h2 class="section-title">Servicios que Ofrezco</h2>
+            <p class="section-intro-text">
+                Para ayudarte a alcanzar tus objetivos y los de tu organización, ofrezco una gama de servicios diseñados para ser flexibles y efectivos. Estos servicios se adaptan a diferentes necesidades, desde la formación individualizada hasta la consultoría estratégica para empresas.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="service-card p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-2xl font-semibold mb-3">Formación a Medida</h3>
+                    <p class="text-gray-700">Capacitación personalizada (presencial o telepresencial) ajustada a las necesidades y objetivos específicos de tu equipo o empresa, garantizando un aprendizaje relevante y aplicable.</p>
+                </div>
+                <div class="service-card p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-2xl font-semibold mb-3">Formación Online</h3>
+                    <p class="text-gray-700">Cursos y programas de aprendizaje en línea, accesibles desde cualquier lugar y con flexibilidad horaria, para que puedas formarte a tu propio ritmo.</p>
+                </div>
+                <div class="service-card p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-2xl font-semibold mb-3">Consultoría Especializada</h3>
+                    <p class="text-gray-700">Asesoramiento experto para la implementación de soluciones tecnológicas innovadoras, la optimización de procesos y la transformación digital de tu negocio.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="card bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+            <h2 class="section-title" style="color: #FFFFFF;">¡Hablemos!</h2>
+            <p class="section-intro-text" style="color: #E0E7FF;">
+                Si estás interesado en mis servicios, tienes alguna pregunta o deseas explorar cómo puedo ayudarte a ti o a tu organización a crecer y adaptarse a las nuevas tecnologías, no dudes en ponerte en contacto.
+            </p>
+            <div class="text-center mt-8 space-y-4">
+                <p class="text-xl"><span class="font-semibold">Email:</span> <a href="mailto:analisis.al.cuadrado.ipd@gmail.com" class="hover:underline">analisis.al.cuadrado.ipd@gmail.com</a></p>
+                <p class="text-xl"><span class="font-semibold">Teléfono:</span> <a href="tel:+34650206917" class="hover:underline">+34 650 206 917</a></p>
+                <p class="text-xl"><span class="font-semibold">LinkedIn:</span> <a href="https://linkedin.com/in/ivanpinar" target="_blank" rel="noopener noreferrer" class="hover:underline">linkedin.com/in/ivanpinar</a></p>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-500 py-8">
+            <p>&copy; <span id="currentYear"></span> Iván Pinar Domínguez. Todos los derechos reservados.</p>
+            <p class="text-sm">Infografía diseñada con Tailwind CSS y Chart.js.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const allCompetencies = [
+            { name: "Power BI - Business Intelligence + IA", category: "ANÁLISIS DE DATOS" },
+            { name: "LLM & OpenAI chatGPT para Tareas Profesionales", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "Langchain - Creación de aplicaciones con LLM y Python", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "Gestión de proyectos con Inteligencia Artificial", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "ChatGPT para Microsoft Office", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "Creación de GPTs personalizados y Automatizaciones con IA", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "Snowflake - Data Warehouse Cloud", category: "ANÁLISIS DE DATOS" },
+            { name: "Data Science con Python", category: "ANÁLISIS DE DATOS" },
+            { name: "Deep Learning con Tensorflow", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "Machine Learning con Python", category: "INTELIGENCIA ARTIFICIAL" },
+            { name: "RPA - Robotic Process Automation con UiPath", category: "AUTOMATIZACIÓN DE PROCESOS" },
+            { name: "RPA con Microsoft Power Automate", category: "AUTOMATIZACIÓN DE PROCESOS" }, /* New Competency Added */
+            { name: "Dashboards interactivos con Python Dash y Plotly", category: "ANÁLISIS DE DATOS" },
+            { name: "Certificación PMBOK v7", category: "HABILIDADES DE GESTIÓN" },
+            { name: "Elastic Stack (Elasticsearch, Logstash y Kibana)", category: "ANÁLISIS DE DATOS" },
+            { name: "Scrum y JIRA", category: "HABILIDADES DE GESTIÓN" },
+            { name: "Internet of Things", category: "OTRAS TECNOLOGÍAS" },
+            { name: "Certificación Professional Scrum Master - I", category: "HABILIDADES DE GESTIÓN" },
+            { name: "Excel - Desde Cero a Avanzado", category: "ANÁLISIS DE DATOS" },
+            { name: "Intelligent Process Automation (IPA) con Python", category: "AUTOMATIZACIÓN DE PROCESOS" },
+            { name: "Trello Gestión de Proyectos", category: "HABILIDADES DE GESTIÓN" },
+            { name: "BPMN - Business Process Modeling and Notation", category: "HABILIDADES DE GESTIÓN" },
+            { name: "Power Query / Power Pivot Excel", category: "ANÁLISIS DE DATOS" },
+            { name: "Lenguaje DAX", category: "ANÁLISIS DE DATOS" },
+            { name: "Procesos ETL con Pentaho", category: "ANÁLISIS DE DATOS" },
+            { name: "Pentaho Business Intelligence", category: "ANÁLISIS DE DATOS" },
+            { name: "Natural Language Processing Python", category: "ANÁLISIS DE DATOS" },
+            { name: "Gestión de proyectos (PMI & Agile)", category: "HABILIDADES DE GESTIÓN" },
+            { name: "Gestión de riesgos", category: "HABILIDADES DE GESTIÓN" }, /* Updated Competency */
+            { name: "Transformación Digital", category: "HABILIDADES DE GESTIÓN" },
+            { name: "Design Thinking", category: "HABILIDADES DE GESTIÓN" }
+        ];
+
+        const groupedCompetencies = allCompetencies.reduce((acc, comp) => {
+            const category = comp.category || "Otros"; /* Default category if undefined */
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(comp.name);
+            return acc;
+        }, {});
+
+        const categoryOrder = [
+            "ANÁLISIS DE DATOS",
+            "INTELIGENCIA ARTIFICIAL",
+            "HABILIDADES DE GESTIÓN",
+            "AUTOMATIZACIÓN DE PROCESOS",
+            "OTRAS TECNOLOGÍAS"
+        ];
+        
+        const sortedGroupedCompetencies = {};
+        categoryOrder.forEach(category => {
+            if (groupedCompetencies[category]) {
+                sortedGroupedCompetencies[category] = groupedCompetencies[category];
+            }
+        });
+        /* Add any remaining categories not in categoryOrder (e.g., "Otros") */
+        Object.keys(groupedCompetencies).forEach(category => {
+            if (!categoryOrder.includes(category)) {
+                sortedGroupedCompetencies[category] = groupedCompetencies[category];
+            }
+        });
+
+
+        const competenciesAccordionDiv = document.getElementById('competencies-accordion');
+        Object.keys(sortedGroupedCompetencies).forEach(category => {
+            const accordionHeader = document.createElement('div');
+            accordionHeader.className = 'accordion-header';
+            accordionHeader.innerHTML = `
+                <span>${category} (${sortedGroupedCompetencies[category].length})</span>
+                <span class="icon-indicator">+</span>
+            `;
+            competenciesAccordionDiv.appendChild(accordionHeader);
+
+            const accordionContent = document.createElement('div');
+            accordionContent.className = 'accordion-content hidden';
+            const ul = document.createElement('ul');
+            sortedGroupedCompetencies[category].forEach(competencyName => {
+                const li = document.createElement('li');
+                li.textContent = competencyName;
+                ul.appendChild(li);
+            });
+            accordionContent.appendChild(ul);
+            competenciesAccordionDiv.appendChild(accordionContent);
+
+            accordionHeader.addEventListener('click', () => {
+                const isHidden = accordionContent.classList.contains('hidden');
+                
+                accordionContent.classList.toggle('hidden');
+                const icon = accordionHeader.querySelector('.icon-indicator');
+                icon.textContent = isHidden ? '−' : '+'; /* Change icon based on visibility */
+            });
+        });
+
+        /* Smooth scrolling for nav links */
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 80; /* Adjust 80 for sticky nav height */
+                     window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
